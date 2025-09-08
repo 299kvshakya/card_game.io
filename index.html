@@ -1,249 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Naughty Deck Card Game</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at center, #3e2723, #1b0000);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 10px;
-      overflow-x: hidden;
-    }
-
-    h1 {
-      color: #fff;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 2rem;
-      text-shadow: 0 3px 8px rgba(0,0,0,0.6);
-    }
-
-    .deck {
-      position: relative;
-      width: 180px;
-      height: 250px;
-    }
-
-    .card {
-      position: absolute;
-      width: 180px;
-      height: 250px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-      cursor: pointer;
-      perspective: 1000px;
-      transition: transform 0.6s ease, top 0.4s ease;
-    }
-
-    .card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.8s;
-      transform-style: preserve-3d;
-    }
-
-    .card.flipped .card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .card-front, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 12px;
-      backface-visibility: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 15px;
-      box-sizing: border-box;
-    }
-
-    .card-front {
-      background: #f8f8f8 url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-      color: #b71c1c;
-      font-size: 2rem;
-      font-weight: bold;
-      border: 2px solid #fff;
-    }
-
-    .card-back {
-      background: linear-gradient(135deg, #ff1744, #d50000);
-      color: #fff;
-      transform: rotateY(180deg);
-      font-size: 1rem;
-      line-height: 1.4;
-    }
-
-    .category {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      background: rgba(255,255,255,0.2);
-      padding: 4px 10px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-
-    /* 📱 Responsive Styles */
-    @media (max-width: 768px) {
-      .deck {
-        width: 140px;
-        height: 200px;
-      }
-      .card {
-        width: 140px;
-        height: 200px;
-      }
-      .card-front {
-        font-size: 1.5rem;
-      }
-      .card-back {
-        font-size: 0.9rem;
-        padding: 10px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-      .deck {
-        width: 120px;
-        height: 170px;
-      }
-      .card {
-        width: 120px;
-        height: 170px;
-      }
-      .card-front {
-        font-size: 1.2rem;
-      }
-      .card-back {
-        font-size: 0.8rem;
-        padding: 8px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Flip Card Memory Game</title>
 </head>
+
 <body>
-  <h1>🔥 Naughty Deck of Cards 🔥</h1>
+    <div class="user-form" id="user-form">
+        <h2>Enter Player Names</h2>
+        <input type="text" id="player1" placeholder="Player 1 Name" required />
+        <input type="text" id="player2" placeholder="Player 2 Name" required />
+        <button id="startGameBtn">Start Game</button>
+    </div>
 
-  <div class="deck" id="deck"></div>
-
-  <script>
-    const truthTasks = [
-      "Truth 💭: What’s your secret turn-on?",
-      "Truth 💭: Craziest place you kissed someone?",
-      "Truth 💭: Who do you secretly wish to kiss?",
-      "Truth 💭: What’s the naughtiest thing you’ve done?",
-      "Truth 💭: Have you ever sent a naughty text?",
-      "Truth 💭: Do you like rough or gentle?",
-      "Truth 💭: Have you ever fantasized about someone here?",
-      "Truth 💭: What’s your guilty pleasure?",
-      "Truth 💭: Favorite place to be kissed?",
-      "Truth 💭: Have you ever kissed same gender?",
-      "Truth 💭: Have you ever roleplayed?",
-      "Truth 💭: Favorite body part on your partner?",
-      "Truth 💭: Have you ever had a one-night stand?",
-      "Truth 💭: What’s your craziest fantasy?",
-      "Truth 💭: Have you ever kissed in public?",
-      "Truth 💭: Who gave you the best kiss ever?",
-      "Truth 💭: Do you prefer lights on or off?",
-      "Truth 💭: What’s your wildest dream?",
-      "Truth 💭: Have you ever been caught being naughty?",
-      "Truth 💭: What’s the sexiest outfit you own?",
-      "Truth 💭: Would you try toys in bed?",
-      "Truth 💭: Have you ever done it outdoors?",
-      "Truth 💭: Favorite position?",
-      "Truth 💭: Do you like being dominant or submissive?",
-      "Truth 💭: Have you ever had a crush on a teacher?",
-      "Truth 💭: Wildest place you’d want to do it?",
-      "Truth 💭: Do you prefer kissing slow or fast?",
-      "Truth 💭: Have you ever sexted?",
-      "Truth 💭: Would you try handcuffs?",
-      "Truth 💭: What’s your dirtiest secret?"
-    ];
-
-    const dareTasks = [
-      "Dare 🔥: Give a 20 second kiss.",
-      "Dare 🔥: Whisper something naughty.",
-      "Dare 🔥: Remove one item of clothing.",
-      "Dare 🔥: Give your partner a lap dance.",
-      "Dare 🔥: Kiss someone’s neck.",
-      "Dare 🔥: Do a seductive dance.",
-      "Dare 🔥: Let someone spank you lightly.",
-      "Dare 🔥: Lick your partner’s lips.",
-      "Dare 🔥: Give a back massage.",
-      "Dare 🔥: Do a sexy pose.",
-      "Dare 🔥: Bite your partner’s lip.",
-      "Dare 🔥: Let your partner blindfold you.",
-      "Dare 🔥: Take a body shot (pretend).",
-      "Dare 🔥: Sit on someone’s lap for 1 minute.",
-      "Dare 🔥: Kiss someone’s hand slowly.",
-      "Dare 🔥: Pretend to moan loudly for 10 seconds.",
-      "Dare 🔥: Run your fingers through someone’s hair.",
-      "Dare 🔥: Pretend to strip (keep it safe 😉).",
-      "Dare 🔥: Kiss someone’s cheek softly.",
-      "Dare 🔥: Whisper a fantasy to your partner.",
-      "Dare 🔥: Let your partner tickle you for 15 sec.",
-      "Dare 🔥: Dance on music for 30 sec.",
-      "Dare 🔥: Blow a kiss to someone here.",
-      "Dare 🔥: Pretend to kiss someone’s ear.",
-      "Dare 🔥: Hug your partner tightly for 20 sec.",
-      "Dare 🔥: Kiss someone’s forehead.",
-      "Dare 🔥: Say something dirty in a soft voice.",
-      "Dare 🔥: Caress your partner’s face gently.",
-      "Dare 🔥: Kiss someone’s hand like royalty.",
-      "Dare 🔥: Close your eyes & let partner surprise kiss."
-    ];
-
-    const deckContainer = document.getElementById("deck");
-
-    // Create deck of 20 visible cards (stacked)
-    for (let i = 0; i < 20; i++) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.top = `${i * 3}px`; // stacked effect
-
-      card.innerHTML = `
-        <div class="card-inner">
-          <div class="card-front">🎴</div>
-          <div class="card-back"></div>
+    <div class="game-container" id="game-container" style="display:none;">
+        <div class="info-bar">
+            <span id="playerTurn"></span>
+            <span id="movesCount"></span>
+            <button id="restartBtn">Restart</button>
         </div>
-      `;
+        <div class="board" id="board"></div>
+    </div>
 
-      card.addEventListener("click", () => flipCard(card));
-      deckContainer.appendChild(card);
-    }
+    <div class="result-modal" id="result-modal" style="display:none;">
+        <h2>Game Over!</h2>
+        <div id="result"></div>
+        <button onclick="restart()">Play Again</button>
+    </div>
 
-    function flipCard(card) {
-      if (!card.classList.contains("flipped")) {
-        card.classList.add("flipped");
-
-        const back = card.querySelector(".card-back");
-        const isTruth = Math.random() > 0.5;
-        const pool = isTruth ? truthTasks : dareTasks;
-        const randomTask = pool[Math.floor(Math.random() * pool.length)];
-
-        back.innerHTML = `<div>${randomTask}</div>
-                          <div class="category">${isTruth ? "Truth" : "Dare"}</div>`;
-
-        // After showing, remove card after 2 seconds
-        setTimeout(() => {
-          card.style.transform = "translateY(-400px) rotate(20deg)";
-          setTimeout(() => card.remove(), 500);
-        }, 2000);
-      }
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
